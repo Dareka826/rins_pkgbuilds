@@ -1,0 +1,47 @@
+pkgname="devuan-debootstrap-files"
+pkgver=0.1
+pkgrel=1
+arch=("x86_64")
+depends=("debootstrap")
+makedepends=("curl" "p7zip" "libarchive")
+source=("https://mirrors.dotsrc.org/devuan-cd/devuan_chimaera/installer-iso/devuan_chimaera_4.0.0_amd64_netinstall.iso"
+        "https://mirrors.dotsrc.org/devuan-cd/devuan_chimaera/installer-iso/SHA256SUMS"
+        "https://files.devuan.org/devuan-devs.gpg")
+sha256sums=("SKIP" "SKIP" "SKIP")
+noextract=("${source[@]##*/}")
+
+prepare() {
+    cd "$srcdir"
+
+    gpg --import ./devuan-devs.gpg || exit 1
+
+    curl -LO 'https://files.devuan.org/devuan_chimaera/installer-iso/SHA256SUMS.asc'
+    gpg --verify ./SHA256SUMS.asc ./SHA256SUMS
+    sha256sum -c --ignore-missing ./SHA256SUMS
+
+    7z e -y ./devuan_chimaera_4.0.0_amd64_netinstall.iso \
+        pool/DEVUAN/main/d/debootstrap/debootstrap-udeb_1.0.123+devuan3_all.udeb \
+        pool/DEVUAN/main/d/devuan-keyring/devuan-keyring_2017.10.03_all.deb
+
+    [ -d ./debootstrap    ] || mkdir debootstrap
+    [ -d ./devuan-keyring ] || mkdir devuan-keyring
+    bsdtar xf ./debootstrap-udeb_1.0.123+devuan3_all.udeb -C ./debootstrap
+    bsdtar xf ./devuan-keyring_2017.10.03_all.deb -C ./devuan-keyring
+
+    cd "${srcdir}/debootstrap"
+    tar xf ./data.tar.xz ./usr/share/debootstrap/scripts
+
+    cd "${srcdir}/devuan-keyring"
+    tar xf ./control.tar.gz ./md5sums
+    tar xf ./data.tar.xz ./usr/share
+    md5sum -c --ignore-missing ./md5sums
+}
+
+package() {
+    install -m0755 -d "${pkgdir}/usr/share/debootstrap/scripts"
+    cp --dereference \
+        "${srcdir}/debootstrap/usr/share/debootstrap/scripts/chimaera" \
+        "${pkgdir}/usr/share/debootstrap/scripts"
+
+    cp -r "${srcdir}/devuan-keyring/usr/share/"* "${pkgdir}/usr/share/"
+}
