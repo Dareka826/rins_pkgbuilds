@@ -1,0 +1,23 @@
+pkgname="rins_s6_colorizer"
+pkgver=v0.2.r3.g31ecb78
+pkgrel=1
+arch=("x86_64")
+depends=("s6-rc")
+makedepends=("git" "goredo")
+source=("git+https://github.com/dareka826/rins_s6_colorizer.git")
+sha256sums=("SKIP")
+
+pkgver() {
+    cd "${srcdir}/rins_s6_colorizer"
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+    cd "${srcdir}/rins_s6_colorizer"
+    redo
+}
+
+package() {
+    cd "${srcdir}/rins_s6_colorizer"
+    DESTDIR="${pkgdir}/usr" redo install
+}
