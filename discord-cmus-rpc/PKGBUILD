@@ -1,0 +1,34 @@
+_pkgname="discord-cmus-rpc"
+pkgname="${_pkgname}-git"
+pkgver=v1.0.r1.g598375e
+pkgrel=1
+arch=("x86_64")
+makedepends=("git" "redo")
+source=("git+https://github.com/dareka826/${_pkgname}.git")
+sha256sums=("SKIP")
+
+pkgver() {
+    cd "${srcdir}/${_pkgname}"
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+    cd "${srcdir}/${_pkgname}"
+
+    # Use gcc instead of clang by default
+    sed -i '/^CC=/d;/^CXX=/d' config.sh
+    printf 'CC="gcc"\n' >> config.sh
+    printf 'CXX="g++"\n' >> config.sh
+
+    git submodule update --init
+    cd discord-rpc
+    ./build.py libs
+    cd ..
+
+    redo
+}
+
+package() {
+    cd "${srcdir}/${_pkgname}"
+    DESTDIR="${pkgdir}/usr" redo install
+}
