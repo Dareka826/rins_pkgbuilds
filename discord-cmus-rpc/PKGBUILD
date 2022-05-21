@@ -1,7 +1,7 @@
 _pkgname="discord-cmus-rpc"
 pkgname="${_pkgname}-git"
 pkgver=v1.0.r1.g598375e
-pkgrel=1
+pkgrel=2
 arch=("x86_64")
 makedepends=("git" "redo")
 source=("git+https://github.com/dareka826/${_pkgname}.git")
@@ -26,6 +26,12 @@ prepare() {
     cd ..
 
     redo
+}
+
+check() {
+    cd "${srcdir}/${_pkgname}"
+
+    redo test
 }
 
 package() {
