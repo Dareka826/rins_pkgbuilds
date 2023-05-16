@@ -4,12 +4,12 @@
 # Contributor: Grigorios Bouzakis <grbzks[at]gmail[dot]com>
 # Contributor: TDY <tdy@gmx.com>
 
-pkgname=tmux-git
+pkgname=tmux-sixel-topcat001-git
 _gitname=tmux
-pkgver=8107_3.0a.r184.g745233d6
-pkgrel=2
-pkgdesc="A terminal multiplexer"
-url="https://github.com/tmux/tmux/wiki"
+pkgver=10094_3.0.r2189.gb1b06702
+pkgrel=1
+pkgdesc="A terminal multiplexer (sixel support)"
+url="https://github.com/topcat001/tmux"
 arch=('i686' 'x86_64')
 license=('BSD')
 depends=('ncurses' 'libevent')
@@ -18,7 +18,7 @@ optdepends=('libutempter: Record user sessions to utmp and wtmp files [add to de
 #depends+=('libutempter') && _addconfigureflags="--enable-utempter"
 provides=('tmux')
 conflicts=('tmux')
-source=('git+https://github.com/tmux/tmux.git'
+source=('git+https://github.com/topcat001/tmux.git#branch=sixel'
         'LICENSE')
 md5sums=('SKIP'
          '71601bc37fa44e4395580b321963018e')
