@@ -1,0 +1,39 @@
+pkgname=redo-c-git
+pkgver=v0.3.r15.g1be4d13
+pkgrel=1
+pkgdesc="An implementation of the redo build system in portable C with zero dependencies"
+arch=('any')
+license=('CC0')
+makedepends=('git')
+provides=('redo')
+conflicts=('redo' 'redo-sh' 'redo-python' 'goredo')
+url="https://github.com/leahneukirchen/redo-c"
+source=("git+${url}")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgname%-git}"
+  git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgname%-git}"
+  sh ./bootstrap.sh
+}
+
+package() {
+  cd "${pkgname%-git}"
+
+  # binaries
+  install -vDm755 -t "${pkgdir}/usr/bin" redo
+  ln -sf redo "${pkgdir}/usr/bin/redo-ifcreate"
+  ln -sf redo "${pkgdir}/usr/bin/redo-ifchange"
+  ln -sf redo "${pkgdir}/usr/bin/redo-always"
+
+  # scripts
+  install -vDm755 -t "$pkgdir/usr/bin" redo-sources
+  install -vDm755 -t "$pkgdir/usr/bin" redo-targets
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}
